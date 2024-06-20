@@ -4,13 +4,13 @@ import Foundation
 @MainActor
 public class App {
 
+    // Settings
     public static var locale: String = "en_US.UTF-8"
-
     public static var fps: UInt = 30
-
     public static var quitKey: FlourChar?
+    public static var disableDebug: Bool = false
 
-    internal static var keyHandlers: [FlourChar: () -> Void] = [:]
+    private static var keyHandlers: [FlourChar: () -> Void] = [:]
 
     private var width: Int32 = COLS
     private var height: Int32 = LINES
@@ -33,6 +33,7 @@ public class App {
         nodelay(window, true)
         curs_set(0)
         use_default_colors()
+        start_color()
     }
 
     private func render() {
@@ -58,7 +59,9 @@ public class App {
             render()
 
             #if DEBUG
-            debugLine()
+            if !App.disableDebug {
+                debugLine()
+            }
             #endif
 
             handleInput()
@@ -108,7 +111,14 @@ public class App {
         if selectedScene < 0 || selectedScene >= scenes.count {
             return
         }
-        scenes[selectedScene].processKeyHandlers(lastInput)
+
+        processGlobalKeyHandlers(lastInput)
+    }
+
+    private func processGlobalKeyHandlers(_ input: FlourChar) {
+        if let handler = App.keyHandlers[input] {
+            handler()
+        }
     }
 
     private func handleResize() {
