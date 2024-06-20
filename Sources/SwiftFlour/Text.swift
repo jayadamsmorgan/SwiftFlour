@@ -1,7 +1,7 @@
 import Darwin.ncurses
 import Foundation
 
-public struct Text: _PrimitiveView {
+public class Text: _PrimitiveView {
 
     public var body: [any View] = []
 
@@ -13,14 +13,6 @@ public struct Text: _PrimitiveView {
     internal var backgroundColor: FlourColor?
 
     public var text: String
-    internal var data: Data {
-        get {
-            text.data(using: .utf8)!
-        }
-        set {
-            text = String(data: newValue, encoding: .utf8)!
-        }
-    }
 
     public init(_ text: String) {
         self.text = text
@@ -30,45 +22,38 @@ public struct Text: _PrimitiveView {
     }
 
     public func setPosition(_ position: Position) -> Self {
-        var copy = self
-        copy.position = position
-        return copy
+        self.position = position
+        return self
     }
 
     public func setPosition(x: Int32, y: Int32) -> Self {
-        var copy = self
-        copy.position = Position(x: x, y: y)
-        return copy
+        self.position = Position(x: x, y: y)
+        return self
     }
 
     public func setPosition(_ pair: (Int32, Int32)) -> Self {
-        var copy = self
-        copy.position = Position(pair)
-        return copy
+        self.position = Position(pair)
+        return self
     }
 
     public func setWidth(_ width: Int32) -> Self {
-        var copy = self
-        copy.width = width
-        return copy
+        self.width = width
+        return self
     }
 
     public func setHeight(_ height: Int32) -> Self {
-        var copy = self
-        copy.height = height
-        return copy
+        self.height = height
+        return self
     }
 
     public func setForeground(_ color: FlourColor) -> Self {
-        var copy = self
-        copy.foregroundColor = color
-        return copy
+        self.foregroundColor = color
+        return self
     }
 
     public func setBackground(_ color: FlourColor) -> Self {
-        var copy = self
-        copy.backgroundColor = color
-        return copy
+        self.backgroundColor = color
+        return self
     }
 
     public func render() {

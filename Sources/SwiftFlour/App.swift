@@ -1,5 +1,6 @@
 import Darwin.ncurses
 import Foundation
+import Logging
 
 @MainActor
 public class App {
@@ -10,7 +11,11 @@ public class App {
     public static var quitKey: FlourChar?
     public static var disableDebug: Bool = false
 
-    private static var keyHandlers: [FlourChar: () -> Void] = [:]
+    public static var logger = Logger(label: "flour") {
+        FileLogHandler(label: $0, filePath: $0 + ".log")
+    }
+
+    private var keyHandlers: [Int32: () -> Void] = [:]
 
     private var width: Int32 = COLS
     private var height: Int32 = LINES
@@ -34,6 +39,9 @@ public class App {
         curs_set(0)
         use_default_colors()
         start_color()
+
+        App.logger.info("App started.")
+
     }
 
     private func render() {
@@ -87,8 +95,8 @@ public class App {
         )
     }
 
-    public static func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
-        keyHandlers[char] = handler
+    public func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
+        keyHandlers[char.charAscii] = handler
     }
 
     public func _quit() {
@@ -108,15 +116,11 @@ public class App {
         if scenes.count == 0 {
             return
         }
-        if selectedScene < 0 || selectedScene >= scenes.count {
-            return
-        }
-
         processGlobalKeyHandlers(lastInput)
     }
 
     private func processGlobalKeyHandlers(_ input: FlourChar) {
-        if let handler = App.keyHandlers[input] {
+        if let handler = keyHandlers[input.charAscii] {
             handler()
         }
     }

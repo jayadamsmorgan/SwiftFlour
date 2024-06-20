@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public struct Scene: Sendable {
+public class Scene: Sendable {
 
     public var views: [any View]
 
@@ -9,7 +9,7 @@ public struct Scene: Sendable {
         self.views = views
     }
 
-    public mutating func add<V: View>(_ view: V) {
+    public func add<V: View>(_ view: V) {
         views.append(view)
     }
 
