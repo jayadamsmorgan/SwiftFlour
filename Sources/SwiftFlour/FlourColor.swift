@@ -51,6 +51,8 @@ extension View {
         let pair = FlourColorPair(foreground: pair.0, background: pair.1)
         if let colorPair = colorPair[pair] {
             attroff(COLOR_PAIR(Int32(colorPair)))
+        } else {
+            App.logger.error("Tried to end color pair which was not created.")
         }
     }
 

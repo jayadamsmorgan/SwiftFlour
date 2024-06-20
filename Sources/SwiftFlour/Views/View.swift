@@ -19,16 +19,54 @@ extension View {
 
 }
 
-internal protocol _PrimitiveView: View {
+public class _PrimitiveView: View {
 
-    var position: Position { get set }
-    var width: Int32 { get set }
-    var height: Int32 { get set }
+    public var body: [any View] = []
 
-    var text: String { get set }
+    internal var position: Position = Position.zero
+    internal var width: Int32 = 0
+    internal var height: Int32 = 0
 
-    func setPosition(_ position: Position) -> Self
-    func setWidth(_ width: Int32) -> Self
-    func setHeight(_ height: Int32) -> Self
+    internal var text: String = ""
 
+    public func render() {}
+
+}
+
+extension _PrimitiveView {
+
+    public func setPosition(_ position: Position) -> Self {
+        self.position = position
+        return self
+    }
+
+    public func setPosition(x: Int32, y: Int32) -> Self {
+        self.position = Position(x: x, y: y)
+        return self
+    }
+
+    public func setX(_ x: Int32) -> Self {
+        self.position.x = x
+        return self
+    }
+
+    public func setY(_ y: Int32) -> Self {
+        self.position.y = y
+        return self
+    }
+
+    public func setPosition(_ pair: (Int32, Int32)) -> Self {
+        self.position = Position(pair)
+        return self
+    }
+
+    public func setWidth(_ width: Int32) -> Self {
+        self.width = width
+        return self
+    }
+
+    public func setHeight(_ height: Int32) -> Self {
+        self.height = height
+        return self
+    }
 }
