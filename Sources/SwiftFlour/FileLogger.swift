@@ -1,5 +1,10 @@
-@preconcurrency import Foundation
 import Logging
+
+#if os(Linux)
+@preconcurrency import Foundation
+#else
+import Foundation
+#endif
 
 public struct FileLogHandler: LogHandler, Sendable {
     public var logLevel: Logger.Level = .info
@@ -16,7 +21,7 @@ public struct FileLogHandler: LogHandler, Sendable {
         if !fileManager.fileExists(atPath: filePath) {
             fileManager.createFile(atPath: filePath, contents: nil, attributes: nil)
         }
-        self.fileHandle = try! FileHandle(forWritingTo: fileURL)
+        self.fileHandle = try! FileHandle(forUpdating: fileURL)
     }
 
     public subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {

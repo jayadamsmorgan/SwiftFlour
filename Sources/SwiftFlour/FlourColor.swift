@@ -6,7 +6,7 @@ private enum FlourColorValue {
     case custom
 }
 
-public struct RGBColor: Hashable {
+public struct RGBColor: Hashable, Sendable {
     public let red: Int16
     public let green: Int16
     public let blue: Int16
@@ -35,7 +35,7 @@ public struct RGBColor: Hashable {
 }
 
 @MainActor
-public struct FlourColor: Hashable {
+public struct FlourColor: Hashable, Sendable {
 
     fileprivate let value: FlourColorValue
 
@@ -53,7 +53,7 @@ public struct FlourColor: Hashable {
     public static let cyan: FlourColor = FlourColor(6)
     public static let white: FlourColor = FlourColor(7)
 
-    public init(_ def: Int16) {
+    private init(_ def: Int16) {
         App.logger.info("Created default color \(def)")
         self.value = .default
         self.color = def
@@ -82,17 +82,25 @@ public struct FlourColor: Hashable {
             self.color = color.color
             return
         }
-        self.color = 7 + Int16(customColors.count) + 1
+        self.color = 8 + Int16(customColors.count)
 
-        guard self.color < 1000 else {
+        guard self.color < 256 else {
             fatalError("Reached limit in creating new colors, consider reusing some.")
         }
         customColors[rgb] = self
 
-        init_color(self.color, self.rgb.red, self.rgb.green, self.rgb.blue)
-        App.logger.info(
-            "Created custom color \(self.color) with rgb: \(self.rgb)"
-        )
+        let status = init_color(self.color, self.rgb.red, self.rgb.green, self.rgb.blue)
+        if status == ERR {
+            App.logger.error("Cannot init RGB Color, terminal might not support it.")
+        } else {
+            App.logger.info(
+                "Created custom color \(self.color) with rgb: \(self.rgb)"
+            )
+        }
+    }
+
+    public nonisolated static func == (lhs: FlourColor, rhs: FlourColor) -> Bool {
+        return lhs.value == rhs.value && lhs.color == rhs.color
     }
 
 }
@@ -111,26 +119,22 @@ extension View {
     fileprivate func createNewColorPair(_ pair: FlourColorPair) -> Int32 {
         let count = Int16(colorPair.count) + 1
         colorPair[pair] = count
-        if let foreground = pair.foreground, let background = pair.background {
-            init_pair(count, foreground.color, background.color)
-        } else if let foreground = pair.foreground {
-            init_pair(count, foreground.color, -1)
-        } else if let background = pair.background {
-            init_pair(count, -1, background.color)
-        } else {
-            init_pair(count, -1, -1)
-        }
+        init_pair(count, pair.foreground?.color ?? -1, pair.background?.color ?? -1)
         return Int32(count)
     }
 
     internal func startColor(_ pair: (FlourColor?, FlourColor?)) {
         let pair = FlourColorPair(foreground: pair.0, background: pair.1)
+
         if let colorPair = colorPair[pair] {
             attron(COLOR_PAIR(Int32(colorPair)))
             return
         }
+
         let colorPair = createNewColorPair(pair)
+
         attron(COLOR_PAIR(colorPair))
+
         App.logger.info(
             "Color pair \(colorPair) created"
                 + " with foreground \(pair.foreground?.color ?? -1)"
