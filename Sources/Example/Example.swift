@@ -13,10 +13,11 @@ public struct Example {
                 .setForeground(.magenta)
                 .setBackground(.cyan),
             Box()
-                .setColor(.yellow)
+                .setColor(.custom(0, 1000, 0))
                 .setHeight(13)
                 .setPosition((20, 20)),
-            Text("WOW"),
+            Text("WOW")
+                .setForeground(.custom(1000, 0, 1000)),
         ])
         let scene2 = Scene([
             Text("Scene 2")

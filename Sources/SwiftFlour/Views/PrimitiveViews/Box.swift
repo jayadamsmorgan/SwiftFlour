@@ -14,6 +14,7 @@ public class Box: _PrimitiveView {
     var color: FlourColor = .red
 
     public func setColor(_ color: FlourColor) -> Self {
+        App.logger.debug("1")
         self.color = color
         return self
     }

@@ -37,8 +37,8 @@ public class App {
         noecho()
         nodelay(window, true)
         curs_set(0)
-        use_default_colors()
         start_color()
+        use_default_colors()
 
         App.logger.info("App started.")
 
