@@ -1,5 +1,5 @@
-import Darwin.ncurses
 import Foundation
+import curses
 
 public class Text: _PrimitiveView {
 

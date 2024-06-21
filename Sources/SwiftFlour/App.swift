@@ -1,6 +1,6 @@
-import Darwin.ncurses
 import Foundation
 import Logging
+import curses
 
 @MainActor
 public class App {

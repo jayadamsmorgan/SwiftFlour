@@ -1,4 +1,5 @@
 import Foundation
+import curses
 
 public enum FlourColor: Int16, RawRepresentable {
     case transparent = -1

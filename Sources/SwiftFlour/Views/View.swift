@@ -1,5 +1,5 @@
-import Darwin.ncurses
 import Foundation
+import curses
 
 @MainActor
 public protocol View: Sendable {

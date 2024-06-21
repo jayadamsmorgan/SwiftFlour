@@ -9,15 +9,10 @@ let package = Package(
         .macOS(.v11)
     ],
     products: [
-        .executable(
-            name: "Example",
-            targets: ["Example"]
-
-        ),
         .library(
             name: "SwiftFlour",
             targets: ["SwiftFlour"]
-        ),
+        )
     ],
     dependencies: [
         // other dependencies
@@ -27,11 +22,20 @@ let package = Package(
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
+        .systemLibrary(
+            name: "curses",
+            pkgConfig: "ncurses",
+            providers: [
+                .apt(["libncurses5-dev"]),
+                .brew(["ncurses"]),
+            ]
+        ),
         .target(
             name: "SwiftFlour",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Logging", package: "swift-log"),
+                "curses",
             ]
         ),
         .executableTarget(
