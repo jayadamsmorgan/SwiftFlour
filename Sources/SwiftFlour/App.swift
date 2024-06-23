@@ -30,6 +30,10 @@ public class App {
 
     private var lastInput = FlourChar(0)
 
+    public convenience init() {
+        self.init([])
+    }
+
     public init(_ scenes: [Scene]) {
         self.scenes = scenes
         setlocale(LC_CTYPE, App.locale)
@@ -37,8 +41,8 @@ public class App {
         noecho()
         nodelay(window, true)
         curs_set(0)
-        use_default_colors()
         start_color()
+        use_default_colors()
 
         App.logger.info("App started.")
 

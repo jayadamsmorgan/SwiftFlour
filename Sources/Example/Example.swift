@@ -4,7 +4,7 @@ import SwiftFlour
 @MainActor
 public struct Example {
     public static func main() async {
-
+        let app = App()
         let scene = Scene([
             Text("Hello, World!")
                 .setPosition((10, 10))
@@ -13,10 +13,11 @@ public struct Example {
                 .setForeground(.magenta)
                 .setBackground(.cyan),
             Box()
-                .setColor(.yellow)
+                .setColor(.rgb1000(500, 1000, 750))
                 .setHeight(13)
                 .setPosition((20, 20)),
-            Text("WOW"),
+            Text("WOW")
+                .setForeground(.rgb255(0, 180, 255)),
         ])
         let scene2 = Scene([
             Text("Scene 2")
@@ -27,9 +28,9 @@ public struct Example {
                 .setBackground(.cyan),
             Text("WOW"),
         ])
+        app.scenes = [scene, scene2]
         App.quitKey = .q
         App.logger.logLevel = .debug
-        let app = App([scene, scene2])
         app.addGlobalKeyHandler(FlourChar("d")) {
             app.scenes.removeLast()
         }
