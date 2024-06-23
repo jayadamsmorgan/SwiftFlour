@@ -27,9 +27,9 @@ public struct RGBColor: Hashable, Sendable {
     }
 
     public init(_ red: UInt8, _ green: UInt8, _ blue: UInt8) {
-        let red: Int16 = Int16(red * 8)
-        let green: Int16 = Int16(green * 8)
-        let blue: Int16 = Int16(blue * 8)
+        let red = Int16(red) * 3
+        let green = Int16(green) * 3
+        let blue = Int16(blue) * 3
         self.init(red, green, blue)
     }
 }
@@ -60,8 +60,12 @@ public struct FlourColor: Hashable, Sendable {
         self.rgb = .init(Int16(0), 0, 0)
     }
 
-    public static func custom(_ red: Int16, _ green: Int16, _ blue: Int16) -> FlourColor {
-        App.logger.info("Creating custom color with rgb: \(red), \(green), \(blue)")
+    public static func rgb1000(_ red: Int16, _ green: Int16, _ blue: Int16) -> FlourColor {
+        let rgb = RGBColor(red, green, blue)
+        return .init(rgb)
+    }
+
+    public static func rgb255(_ red: UInt8, _ green: UInt8, _ blue: UInt8) -> FlourColor {
         let rgb = RGBColor(red, green, blue)
         return .init(rgb)
     }
@@ -75,23 +79,33 @@ public struct FlourColor: Hashable, Sendable {
         self.init(rgb)
     }
 
+    public init(_ red: UInt8, _ green: UInt8, _ blue: UInt8) {
+        let rgb = RGBColor(red, green, blue)
+        self.init(rgb)
+    }
+
     public init(_ rgb: RGBColor) {
+        App.logger.info("Creating custom color with rgb: \(rgb.red), \(rgb.green), \(rgb.blue)")
         self.rgb = rgb
         self.value = .custom
         if let color = customColors[rgb] {
             self.color = color.color
             return
         }
-        self.color = 8 + Int16(customColors.count)
+        self.color = 16 + Int16(customColors.count)
 
         guard self.color < 256 else {
-            fatalError("Reached limit in creating new colors, consider reusing some.")
+            App.logger.error("Reached limit in creating custom colors, consider reusing some.")
+            return
         }
+
         customColors[rgb] = self
 
         let status = init_color(self.color, self.rgb.red, self.rgb.green, self.rgb.blue)
         if status == ERR {
-            App.logger.error("Cannot init RGB Color, terminal might not support it.")
+            App.logger.error(
+                "Cannot init RGB Color, terminal might not support it or the color was created before app initialization."
+            )
         } else {
             App.logger.info(
                 "Created custom color \(self.color) with rgb: \(self.rgb)"

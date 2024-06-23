@@ -30,6 +30,10 @@ public class App {
 
     private var lastInput = FlourChar(0)
 
+    public convenience init() {
+        self.init([])
+    }
+
     public init(_ scenes: [Scene]) {
         self.scenes = scenes
         setlocale(LC_CTYPE, App.locale)
