@@ -4,7 +4,7 @@ import curses
 public class Text: _PrimitiveView {
 
     internal var foregroundColor: FlourColor?
-    internal var backgroundColor: FlourColor?
+    internal var backgroundColor: FlourColor? = .transparent
 
     public init(_ text: String) {
         super.init()
@@ -29,20 +29,42 @@ public class Text: _PrimitiveView {
             return
         }
 
-        self.startColor((foregroundColor, backgroundColor))
+        var backgroundColor = self.backgroundColor
+        if backgroundColor == .transparent, let parentBackground {
+            backgroundColor = parentBackground
+        }
+
+        if let window {
+            self.startColor((foregroundColor, backgroundColor), window: window)
+        } else {
+            self.startColor((foregroundColor, backgroundColor))
+        }
 
         var text = self.text
         if width < text.count {
             for i in position.y..<position.y + height {
                 let printText = String(text.prefix(Int(width)))
                 text = String(text.dropFirst(Int(width)))
-                mvaddstr(i, position.x, printText)
+                if let window {
+                    mvwaddstr(window, i, position.x, printText)
+                } else {
+                    mvaddstr(i, position.x, printText)
+                }
             }
         } else {
-            mvaddstr(position.y, position.x, text)
+            if let window {
+                mvwaddstr(window, position.y, position.x, text)
+            } else {
+                mvaddstr(position.y, position.x, text)
+            }
         }
 
-        self.endColor((foregroundColor, backgroundColor))
+        if let window {
+            self.endColor((foregroundColor, backgroundColor), window: window)
+        } else {
+            self.endColor((foregroundColor, backgroundColor))
+        }
+
     }
 
 }

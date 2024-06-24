@@ -17,9 +17,33 @@ extension View {
         }
     }
 
+    public func setWindow(_ window: OpaquePointer) {
+        if let view = self as? _PrimitiveView {
+            view.setWindow(window)
+        } else {
+            for child in body {
+                child.setWindow(window)
+            }
+        }
+    }
+
+    public func setParentBackground(_ color: FlourColor) {
+        if let view = self as? _PrimitiveView {
+            view.setParentBackground(color)
+        } else {
+            for child in body {
+                child.setParentBackground(color)
+            }
+        }
+    }
+
 }
 
 public class _PrimitiveView: View {
+
+    public var window: OpaquePointer?
+
+    public var parentBackground: FlourColor?
 
     public var body: [any View] = []
 
@@ -30,6 +54,14 @@ public class _PrimitiveView: View {
     internal var text: String = ""
 
     public func render() {}
+
+    public func setWindow(_ window: OpaquePointer) {
+        self.window = window
+    }
+
+    public func setParentBackground(_ color: FlourColor) {
+        self.parentBackground = color
+    }
 
 }
 

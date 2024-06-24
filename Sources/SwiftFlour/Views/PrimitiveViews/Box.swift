@@ -14,17 +14,29 @@ public class Box: _PrimitiveView {
     var color: FlourColor = .red
 
     public func setColor(_ color: FlourColor) -> Self {
-        App.logger.debug("1")
         self.color = color
         return self
     }
 
     override public func render() {
-        startColor((nil, color))
-        for i in position.y..<position.y + height {
-            mvaddstr(i, position.x, String(repeating: " ", count: Int(width)))
+
+        if let window {
+            startColor((nil, color), window: window)
+        } else {
+            startColor((nil, color))
         }
-        endColor((nil, color))
+        for i in position.y..<position.y + height {
+            if window != nil {
+                mvwaddstr(window!, i, position.x, String(repeating: " ", count: Int(width)))
+            } else {
+                mvaddstr(i, position.x, String(repeating: " ", count: Int(width)))
+            }
+        }
+        if let window {
+            endColor((nil, color), window: window)
+        } else {
+            endColor((nil, color))
+        }
     }
 
 }

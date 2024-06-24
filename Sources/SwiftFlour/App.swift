@@ -10,6 +10,7 @@ public class App {
     public static var fps: UInt = 30
     public static var quitKey: FlourChar?
     public static var disableDebug: Bool = false
+    public static var disableLogging: Bool = false
 
     public static var logger = Logger(label: "flour") {
         FileLogHandler(label: $0, filePath: $0 + ".log")
@@ -41,8 +42,13 @@ public class App {
         noecho()
         nodelay(window, true)
         curs_set(0)
-        start_color()
-        use_default_colors()
+
+        if has_colors() {
+            start_color()
+            use_default_colors()
+        } else {
+            App.logger.warning("Terminal does not support colors.")
+        }
 
         App.logger.info("App started.")
 
@@ -64,8 +70,6 @@ public class App {
         }
         while !quit {
 
-            erase()
-
             handleResize()
 
             render()
@@ -77,8 +81,6 @@ public class App {
             #endif
 
             handleInput()
-
-            refresh()
 
             napms(Int32(1.0 / Double(App.fps) * 1000))
 
@@ -101,6 +103,10 @@ public class App {
 
     public func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
         keyHandlers[char.charAscii] = handler
+    }
+
+    public func removeGlobalKeyHandler(_ char: FlourChar) {
+        keyHandlers.removeValue(forKey: char.charAscii)
     }
 
     public func _quit() {

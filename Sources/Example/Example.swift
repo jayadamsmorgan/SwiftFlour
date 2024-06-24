@@ -3,8 +3,11 @@ import SwiftFlour
 @main
 @MainActor
 public struct Example {
+
     public static func main() async {
+        App.logger.logLevel = .debug
         let app = App()
+
         let scene = Scene([
             Text("Hello, World!")
                 .setPosition((10, 10))
@@ -19,6 +22,7 @@ public struct Example {
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
         ])
+
         let scene2 = Scene([
             Text("Scene 2")
                 .setPosition((10, 10))
@@ -28,9 +32,11 @@ public struct Example {
                 .setBackground(.cyan),
             Text("WOW"),
         ])
+        .setBackgroundColor(.green)
+
         app.scenes = [scene, scene2]
         App.quitKey = .q
-        App.logger.logLevel = .debug
+
         app.addGlobalKeyHandler(FlourChar("d")) {
             app.scenes.removeLast()
         }
@@ -46,6 +52,7 @@ public struct Example {
         app.addGlobalKeyHandler(FlourChar("i")) {
             app.scenes[0].add(Text("TEST"))
         }
+
         await app.run()
     }
 

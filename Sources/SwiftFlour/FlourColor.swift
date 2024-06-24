@@ -41,7 +41,7 @@ public struct FlourColor: Hashable, Sendable {
 
     fileprivate let rgb: RGBColor
 
-    fileprivate let color: Int16
+    internal let color: Int16
 
     public static let transparent: FlourColor = FlourColor(-1)
     public static let black: FlourColor = FlourColor(0)
@@ -94,6 +94,11 @@ public struct FlourColor: Hashable, Sendable {
         }
         self.color = 16 + Int16(customColors.count)
 
+        guard can_change_color() else {
+            App.logger.info("Terminal does not support changing colors.")
+            return
+        }
+
         guard self.color < 256 else {
             App.logger.error("Reached limit in creating custom colors, consider reusing some.")
             return
@@ -130,36 +135,57 @@ fileprivate var colorPair: [FlourColorPair: Int16] = [:]
 
 extension View {
 
+    internal func getColorPair(_ pair: (FlourColor?, FlourColor?)) -> Int32 {
+        let pair = FlourColorPair(foreground: pair.0, background: pair.1)
+
+        if let colorPair = colorPair[pair] {
+            return Int32(colorPair)
+        }
+
+        return createNewColorPair(pair)
+    }
+
     fileprivate func createNewColorPair(_ pair: FlourColorPair) -> Int32 {
         let count = Int16(colorPair.count) + 1
         colorPair[pair] = count
-        init_pair(count, pair.foreground?.color ?? -1, pair.background?.color ?? -1)
+        let foreground = pair.foreground?.color ?? -1
+        let background = pair.background?.color ?? -1
+        init_pair(count, foreground, background)
+        App.logger.info(
+            "New color pair created"
+                + " with foreground \(foreground)"
+                + " and background \(background)"
+        )
         return Int32(count)
     }
 
     internal func startColor(_ pair: (FlourColor?, FlourColor?)) {
-        let pair = FlourColorPair(foreground: pair.0, background: pair.1)
 
-        if let colorPair = colorPair[pair] {
-            attron(COLOR_PAIR(Int32(colorPair)))
-            return
-        }
-
-        let colorPair = createNewColorPair(pair)
+        let colorPair = getColorPair(pair)
 
         attron(COLOR_PAIR(colorPair))
+    }
 
-        App.logger.info(
-            "Color pair \(colorPair) created"
-                + " with foreground \(pair.foreground?.color ?? -1)"
-                + " and background \(pair.background?.color ?? -1)"
-        )
+    internal func startColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer) {
+
+        let colorPair = getColorPair(pair)
+
+        wattron(window, COLOR_PAIR(colorPair))
     }
 
     internal func endColor(_ pair: (FlourColor?, FlourColor?)) {
         let pair = FlourColorPair(foreground: pair.0, background: pair.1)
         if let colorPair = colorPair[pair] {
             attroff(COLOR_PAIR(Int32(colorPair)))
+        } else {
+            App.logger.error("Tried to end color pair which was not created.")
+        }
+    }
+
+    internal func endColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer) {
+        let pair = FlourColorPair(foreground: pair.0, background: pair.1)
+        if let colorPair = colorPair[pair] {
+            wattroff(window, COLOR_PAIR(Int32(colorPair)))
         } else {
             App.logger.error("Tried to end color pair which was not created.")
         }
