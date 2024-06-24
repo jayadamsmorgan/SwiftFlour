@@ -64,6 +64,7 @@ public class Text: _PrimitiveView {
         } else {
             self.endColor((foregroundColor, backgroundColor))
         }
+        super.render()
 
     }
 

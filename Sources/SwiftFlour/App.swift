@@ -12,6 +12,10 @@ public class App {
     public static var disableDebug: Bool = false
     public static var disableLogging: Bool = false
 
+    #if DEBUG
+    private var debugWindow: OpaquePointer
+    #endif
+
     public static var logger = Logger(label: "flour") {
         FileLogHandler(label: $0, filePath: $0 + ".log")
     }
@@ -50,6 +54,10 @@ public class App {
             App.logger.warning("Terminal does not support colors.")
         }
 
+        #if DEBUG
+        self.debugWindow = newwin(2, COLS, LINES - 2, 0)
+        #endif
+
         App.logger.info("App started.")
 
     }
@@ -87,11 +95,14 @@ public class App {
         }
     }
 
+    #if DEBUG
     private func debugLine() {
+        wclear(debugWindow)
         let bottomLine = String(repeating: "_", count: Int(width))
-        mvaddstr(LINES - 2, 0, bottomLine)
-        mvaddstr(
-            LINES - 1,
+        mvwaddstr(debugWindow, 0, 0, bottomLine)
+        mvwaddstr(
+            debugWindow,
+            1,
             0,
             "DBG_INFO: last input: \(lastInput.charAscii),"
                 + " window: (\(width)x\(height)),"
@@ -99,7 +110,9 @@ public class App {
                 + " scenes: \(scenes.count),"
                 + " selectedScene: \(selectedScene)"
         )
+        wrefresh(debugWindow)
     }
+    #endif
 
     public func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
         keyHandlers[char.charAscii] = handler

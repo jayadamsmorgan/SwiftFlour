@@ -16,12 +16,14 @@ public struct Example {
                 .setForeground(.magenta)
                 .setBackground(.cyan),
             Box()
+                .enableBorder(padding: 2)
                 .setColor(.rgb1000(500, 1000, 750))
                 .setHeight(13)
                 .setPosition((20, 20)),
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
         ])
+        .enableWindowBorder(style: .square)
 
         let scene2 = Scene([
             Text("Scene 2")
@@ -32,7 +34,7 @@ public struct Example {
                 .setBackground(.cyan),
             Text("WOW"),
         ])
-        .setBackgroundColor(.green)
+        // .setBackgroundColor(.green)
 
         app.scenes = [scene, scene2]
         App.quitKey = .q
@@ -44,10 +46,14 @@ public struct Example {
             app.scenes.append(scene2)
         }
         app.addGlobalKeyHandler(FlourChar("]")) {
-            app.selectedScene += 1
+            if app.selectedScene < app.scenes.count - 1 {
+                app.selectedScene += 1
+            }
         }
         app.addGlobalKeyHandler(FlourChar("[")) {
-            app.selectedScene -= 1
+            if app.selectedScene > 0 {
+                app.selectedScene -= 1
+            }
         }
         app.addGlobalKeyHandler(FlourChar("i")) {
             app.scenes[0].add(Text("TEST"))

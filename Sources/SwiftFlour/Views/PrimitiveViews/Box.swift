@@ -19,7 +19,6 @@ public class Box: _PrimitiveView {
     }
 
     override public func render() {
-
         if let window {
             startColor((nil, color), window: window)
         } else {
@@ -37,6 +36,7 @@ public class Box: _PrimitiveView {
         } else {
             endColor((nil, color))
         }
+        super.render()
     }
 
 }

@@ -43,6 +43,7 @@ public struct FlourColor: Hashable, Sendable {
 
     internal let color: Int16
 
+    public static let `default`: FlourColor = FlourColor(-1)
     public static let transparent: FlourColor = FlourColor(-1)
     public static let black: FlourColor = FlourColor(0)
     public static let red: FlourColor = FlourColor(1)
