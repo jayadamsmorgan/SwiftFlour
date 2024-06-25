@@ -54,6 +54,8 @@ public class App {
             App.logger.warning("Terminal does not support colors.")
         }
 
+        keypad(stdscr, true)
+
         #if DEBUG
         self.debugWindow = newwin(2, COLS, LINES - 2, 0)
         #endif

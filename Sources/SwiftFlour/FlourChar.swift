@@ -4,15 +4,17 @@ public struct FlourChar: Equatable, Sendable, Hashable {
 
     public static let q = FlourChar("q")
 
-    public static let arrowUp = FlourChar(KEY_UP)
-    public static let arrowDown = FlourChar(KEY_DOWN)
-    public static let arrowLeft = FlourChar(KEY_LEFT)
-    public static let arrowRight = FlourChar(KEY_RIGHT)
+    public static let arrowUp = FlourChar(259)
+    public static let arrowDown = FlourChar(258)
+    public static let arrowLeft = FlourChar(260)
+    public static let arrowRight = FlourChar(261)
 
-    public static let enter = FlourChar(KEY_ENTER)
-    public static let backspace = FlourChar(KEY_BACKSPACE)
+    public static let escape = FlourChar(27)
+    public static let tab = FlourChar(9)
+    public static let enter = FlourChar(10)
+    public static let backspace = FlourChar(263)
 
-    public static let space = FlourChar(" ")
+    public static let space = FlourChar(32)
 
     public let charAscii: Int32
 
