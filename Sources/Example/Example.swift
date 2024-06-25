@@ -14,16 +14,17 @@ public struct Example {
                 .setWidth(12)
                 .setHeight(1)
                 .setForeground(.magenta)
-                .setBackground(.cyan),
+                .setBackground(.cyan)
+                .withBorder(color: .rgb255(255, 0, 0)),
             Box()
-                .enableBorder(padding: 2)
                 .setColor(.rgb1000(500, 1000, 750))
                 .setHeight(13)
-                .setPosition((20, 20)),
+                .setPosition((20, 20))
+                .withBorder(verticalPadding: 2, horizontalPadding: 4),
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
         ])
-        .enableWindowBorder(style: .square)
+        .withBorder(color: .rgb255(0, 255, 0))
 
         let scene2 = Scene([
             Text("Scene 2")
@@ -34,7 +35,7 @@ public struct Example {
                 .setBackground(.cyan),
             Text("WOW"),
         ])
-        // .setBackgroundColor(.green)
+        .setBackgroundColor(.green)
 
         app.scenes = [scene, scene2]
         App.quitKey = .q

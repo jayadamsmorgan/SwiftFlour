@@ -15,10 +15,11 @@ public class _PrimitiveView: View {
 
     internal var text: String = ""
 
-    internal var border: Bool = false
-    internal var borderPadding: Int32 = 0
+    public var borderEnabled: Bool = false
+    internal var borderVerticalPadding: Int32 = 0
+    internal var borderHorizontalPadding: Int32 = 0
     internal var borderColor: FlourColor = .white
-    internal var borderStyle: BorderType = .square
+    internal var borderStyle: BorderType = .singleLine
 
     public func render() {}
 

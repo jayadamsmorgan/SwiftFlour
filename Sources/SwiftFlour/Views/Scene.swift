@@ -4,8 +4,6 @@ import curses
 @MainActor
 public class Scene: _PrimitiveView, Sendable {
 
-    private var windowBorder: BorderType?
-
     public var backgroundColor: FlourColor
 
     public init(_ views: [any View] = []) {
@@ -46,23 +44,13 @@ public class Scene: _PrimitiveView, Sendable {
 
     public override func render() {
         wclear(window!)
-        if let windowBorder {
-            renderBorder(for: window!, with: windowBorder)
+        if borderEnabled {
+            renderBorder()
         }
         for view in body {
             view.render()
         }
         wrefresh(window!)
-    }
-
-    public func enableWindowBorder(style: BorderType = .square) -> Self {
-        self.windowBorder = style
-        return self
-    }
-
-    public func disableWindowBorder() -> Self {
-        self.windowBorder = nil
-        return self
     }
 
 }

@@ -41,7 +41,7 @@ public class App {
 
     public init(_ scenes: [Scene]) {
         self.scenes = scenes
-        setlocale(LC_CTYPE, App.locale)
+        setlocale(LC_ALL, "")
         window = initscr()
         noecho()
         nodelay(window, true)

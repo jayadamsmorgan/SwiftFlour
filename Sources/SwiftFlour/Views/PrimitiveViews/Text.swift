@@ -25,6 +25,11 @@ public class Text: _PrimitiveView {
     }
 
     override public func render() {
+
+        if borderEnabled {
+            renderBorder()
+        }
+
         if height == 0 {
             return
         }

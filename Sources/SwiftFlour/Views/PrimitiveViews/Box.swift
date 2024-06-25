@@ -19,6 +19,11 @@ public class Box: _PrimitiveView {
     }
 
     override public func render() {
+
+        if borderEnabled {
+            renderBorder()
+        }
+
         if let window {
             startColor((nil, color), window: window)
         } else {
