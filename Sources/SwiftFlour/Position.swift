@@ -33,3 +33,41 @@ public struct Position: Sendable {
         self.init(x: pair.0, y: pair.1)
     }
 }
+
+extension Position: Equatable {
+    public static func == (lhs: Position, rhs: Position) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+
+    public static func < (lhs: Position, rhs: Position) -> Bool {
+        if lhs.y < rhs.y {
+            return true
+        }
+        if lhs.y == rhs.y {
+            return lhs.x < rhs.x
+        }
+        return false
+    }
+
+    public static func <= (lhs: Position, rhs: Position) -> Bool {
+        return lhs == rhs || lhs < rhs
+    }
+
+    public static func > (lhs: Position, rhs: Position) -> Bool {
+        if lhs.y > rhs.y {
+            return true
+        }
+        if lhs.y == rhs.y {
+            return lhs.x > rhs.x
+        }
+        return false
+    }
+
+    public static func >= (lhs: Position, rhs: Position) -> Bool {
+        return lhs == rhs || lhs > rhs
+    }
+}
+
+extension Position: Hashable {
+
+}

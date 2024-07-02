@@ -113,6 +113,7 @@ public extension _PrimitiveView {
 internal extension _PrimitiveView {
 
     func renderBorder() {
+        let window = parentScene?.window
         if borderEnabled {
             if let window {
                 startColor((borderColor, nil), window: window)

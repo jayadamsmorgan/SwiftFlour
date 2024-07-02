@@ -7,7 +7,7 @@ public class App {
 
     // Settings
     public static var locale: String = "en_US.UTF-8"
-    public static var fps: UInt = 30
+    public static var fps: UInt = 20
     public static var quitKey: FlourChar?
     public static var disableDebug: Bool = false
     public static var disableLogging: Bool = false
@@ -22,8 +22,23 @@ public class App {
 
     private var keyHandlers: [Int32: () -> Void] = [:]
 
-    private var width: Int32 = COLS
-    private var height: Int32 = LINES
+    private static var buttonHandlers: [Button: () -> Void] = [:]
+
+    private static var width: Int32 = COLS
+
+    public static func getWidth() -> Int32 {
+        width
+    }
+
+    #if DEBUG
+    private static var height: Int32 = LINES - 2
+    #else
+    private static var height: Int32 = LINES
+    #endif
+
+    public static func getHeight() -> Int32 {
+        height
+    }
 
     public var scenes: [Scene]
 
@@ -60,8 +75,49 @@ public class App {
         self.debugWindow = newwin(2, COLS, LINES - 2, 0)
         #endif
 
+        initDefaultKeyHandlers()
+
         App.logger.info("App started.")
 
+    }
+
+    private func initDefaultKeyHandlers() {
+        self.keyHandlers[FlourChar.arrowUp.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.upperFocusable(for: selectedScene)
+        }
+        self.keyHandlers[FlourChar.arrowDown.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.lowerFocusable(for: selectedScene)
+        }
+        self.keyHandlers[FlourChar.arrowLeft.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.leftFocusable(for: selectedScene)
+        }
+        self.keyHandlers[FlourChar.arrowRight.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.rightFocusable(for: selectedScene)
+        }
+        self.keyHandlers[FlourChar.tab.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.nextFocusable(for: selectedScene)
+        }
+        self.keyHandlers[FlourChar.shiftTab.charAscii] = {
+            guard let selectedScene = self.getCurrentScene() else {
+                return
+            }
+            SharedFocusables.shared.previousFocusable(for: selectedScene)
+        }
     }
 
     private func render() {
@@ -82,13 +138,13 @@ public class App {
 
             handleResize()
 
-            render()
-
             #if DEBUG
             if !App.disableDebug {
                 debugLine()
             }
             #endif
+
+            render()
 
             handleInput()
 
@@ -100,14 +156,14 @@ public class App {
     #if DEBUG
     private func debugLine() {
         wclear(debugWindow)
-        let bottomLine = String(repeating: "_", count: Int(width))
+        let bottomLine = String(repeating: "_", count: Int(App.width))
         mvwaddstr(debugWindow, 0, 0, bottomLine)
         mvwaddstr(
             debugWindow,
             1,
             0,
             "DBG_INFO: last input: \(lastInput.charAscii),"
-                + " window: (\(width)x\(height)),"
+                + " window: (\(App.width)x\(App.height)),"
                 + " cursor: (\(getcurx(window)),\(getcury(window))),"
                 + " scenes: \(scenes.count),"
                 + " selectedScene: \(selectedScene)"
@@ -116,8 +172,38 @@ public class App {
     }
     #endif
 
-    public func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
+    public func setGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void) {
         keyHandlers[char.charAscii] = handler
+    }
+
+    public func setGlobalKeyHandlers(_ char: FlourChar, handlers: [() -> Void]) {
+        keyHandlers[char.charAscii] = {
+            for handler in handlers {
+                handler()
+            }
+        }
+    }
+
+    public func addGlobalKeyHandler(_ char: FlourChar, handler: @escaping () -> Void, higherPriority: Bool = false) {
+        guard let oldHandler = keyHandlers[char.charAscii] else {
+            setGlobalKeyHandler(char, handler: handler)
+            return
+        }
+        if higherPriority {
+            keyHandlers[char.charAscii] = {
+                handler()
+                oldHandler()
+            }
+        } else {
+            keyHandlers[char.charAscii] = {
+                oldHandler()
+                handler()
+            }
+        }
+    }
+
+    internal static func addButtonHandler(for button: Button, handler: @escaping () -> Void) {
+        buttonHandlers[button] = handler
     }
 
     public func removeGlobalKeyHandler(_ char: FlourChar) {
@@ -150,11 +236,21 @@ public class App {
         }
     }
 
+    private func getCurrentScene() -> Scene? {
+        if scenes.count == 0 {
+            return nil
+        }
+        if selectedScene < 0 || selectedScene >= scenes.count {
+            return nil
+        }
+        return scenes[selectedScene]
+    }
+
     private func handleResize() {
-        width = COLS
-        height = LINES
+        App.width = COLS
+        App.height = LINES
         #if DEBUG
-        height -= 2
+        App.height -= 2
         #endif
     }
 }

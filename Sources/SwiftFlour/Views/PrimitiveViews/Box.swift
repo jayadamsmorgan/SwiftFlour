@@ -24,6 +24,8 @@ public class Box: _PrimitiveView {
             renderBorder()
         }
 
+        let window = parentScene?.window
+
         if let window {
             startColor((nil, color), window: window)
         } else {

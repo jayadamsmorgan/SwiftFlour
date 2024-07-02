@@ -4,11 +4,8 @@ import SwiftFlour
 @MainActor
 public struct Example {
 
-    public static func main() async {
-        App.logger.logLevel = .debug
-        let app = App()
-
-        let scene = Scene([
+    class FirstView: View {
+        public var body: [any View] = [
             Text("Hello, World!")
                 .setPosition((10, 10))
                 .setWidth(12)
@@ -21,10 +18,25 @@ public struct Example {
                 .setHeight(13)
                 .setPosition((20, 20))
                 .withBorder(verticalPadding: 2, horizontalPadding: 4),
+            Button("BUTTON")
+                .setPosition((80, 10)),
+            Button("BUTTON2")
+                .setPosition((80, 15)),
+            Button("BUTTON3")
+                .setPosition((100, 10)),
+            Button("BUTTON4")
+                .setPosition((100, 15)),
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
-        ])
-        .withBorder(color: .rgb255(0, 255, 0))
+        ]
+    }
+
+    public static func main() async {
+        App.logger.logLevel = .debug
+        let app = App()
+
+        let scene = Scene([FirstView()])
+            .withBorder(color: .rgb255(0, 255, 0))
 
         let scene2 = Scene([
             Text("Scene 2")

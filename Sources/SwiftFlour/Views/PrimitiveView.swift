@@ -3,7 +3,7 @@ import curses
 
 public class _PrimitiveView: View {
 
-    public var window: OpaquePointer?
+    public var parentScene: Scene?
 
     public var parentBackground: FlourColor?
 
@@ -23,8 +23,8 @@ public class _PrimitiveView: View {
 
     public func render() {}
 
-    public func setWindow(_ window: OpaquePointer) {
-        self.window = window
+    public func setParentScene(_ scene: Scene) {
+        self.parentScene = scene
     }
 
     public func setParentBackground(_ color: FlourColor) {

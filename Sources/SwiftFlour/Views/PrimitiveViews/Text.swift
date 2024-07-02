@@ -39,6 +39,8 @@ public class Text: _PrimitiveView {
             backgroundColor = parentBackground
         }
 
+        let window = parentScene?.window
+
         if let window {
             self.startColor((foregroundColor, backgroundColor), window: window)
         } else {

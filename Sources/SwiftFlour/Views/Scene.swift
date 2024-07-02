@@ -4,6 +4,10 @@ import curses
 @MainActor
 public class Scene: _PrimitiveView, Sendable {
 
+    private var id: UUID = UUID()
+
+    internal var window: OpaquePointer?
+
     public var backgroundColor: FlourColor
 
     public init(_ views: [any View] = []) {
@@ -19,12 +23,12 @@ public class Scene: _PrimitiveView, Sendable {
         #endif
         self.body = views
         for view in body {
-            view.setWindow(window!)
+            view.setParentScene(self)
         }
     }
 
     public func add<V: View>(_ view: V) {
-        view.setWindow(window!)
+        view.setParentScene(self)
         body.append(view)
     }
 
@@ -53,4 +57,16 @@ public class Scene: _PrimitiveView, Sendable {
         wrefresh(window!)
     }
 
+}
+
+extension Scene: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+extension Scene: Equatable {
+    public static func == (lhs: Scene, rhs: Scene) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

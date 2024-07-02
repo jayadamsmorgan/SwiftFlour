@@ -17,12 +17,15 @@ extension View {
         }
     }
 
-    public func setWindow(_ window: OpaquePointer) {
+    public func setParentScene(_ scene: Scene) {
         if let view = self as? _PrimitiveView {
-            view.setWindow(window)
+            view.setParentScene(scene)
+            if let view = view as? Focusable {
+                SharedFocusables.shared.addFocusable(view, for: scene)
+            }
         } else {
             for child in body {
-                child.setWindow(window)
+                child.setParentScene(scene)
             }
         }
     }
