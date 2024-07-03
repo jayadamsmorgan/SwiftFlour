@@ -23,6 +23,7 @@ public class Button: Text, Focusable {
     private var buttonJustPressed: Bool = false
 
     internal var isFocused: Bool = false
+    internal var onPress: () -> Void = {}
 
     public init(_ text: String, style: ButtonStyle = .textOnly) {
         self.buttonStyle = style
@@ -31,8 +32,8 @@ public class Button: Text, Focusable {
 
     public init(_ text: String, style: ButtonStyle = .textOnly, _ onClick: @escaping () -> Void) {
         self.buttonStyle = style
+        self.onPress = onClick
         super.init(text)
-        self.setOnClick(onClick)
     }
 
     public override func render() {
@@ -62,7 +63,7 @@ public class Button: Text, Focusable {
     }
 
     public func setOnClick(_ onClick: @escaping () -> Void) {
-        App.addButtonHandler(for: self, handler: onClick)
+        self.onPress = onClick
     }
 
 }

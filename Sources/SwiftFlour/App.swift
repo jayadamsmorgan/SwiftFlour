@@ -22,8 +22,6 @@ public class App {
 
     private var keyHandlers: [Int32: () -> Void] = [:]
 
-    private static var buttonHandlers: [Button: () -> Void] = [:]
-
     private static var width: Int32 = COLS
 
     public static func getWidth() -> Int32 {
@@ -86,25 +84,25 @@ public class App {
             guard let selectedScene = self.getCurrentScene() else {
                 return
             }
-            SharedFocusables.shared.upperFocusable(for: selectedScene)
+            SharedFocusables.shared.moveFocusable(for: selectedScene, direction: .up)
         }
         self.keyHandlers[FlourChar.arrowDown.charAscii] = {
             guard let selectedScene = self.getCurrentScene() else {
                 return
             }
-            SharedFocusables.shared.lowerFocusable(for: selectedScene)
+            SharedFocusables.shared.moveFocusable(for: selectedScene, direction: .down)
         }
         self.keyHandlers[FlourChar.arrowLeft.charAscii] = {
             guard let selectedScene = self.getCurrentScene() else {
                 return
             }
-            SharedFocusables.shared.leftFocusable(for: selectedScene)
+            SharedFocusables.shared.moveFocusable(for: selectedScene, direction: .left)
         }
         self.keyHandlers[FlourChar.arrowRight.charAscii] = {
             guard let selectedScene = self.getCurrentScene() else {
                 return
             }
-            SharedFocusables.shared.rightFocusable(for: selectedScene)
+            SharedFocusables.shared.moveFocusable(for: selectedScene, direction: .right)
         }
         self.keyHandlers[FlourChar.tab.charAscii] = {
             guard let selectedScene = self.getCurrentScene() else {
@@ -200,10 +198,6 @@ public class App {
                 handler()
             }
         }
-    }
-
-    internal static func addButtonHandler(for button: Button, handler: @escaping () -> Void) {
-        buttonHandlers[button] = handler
     }
 
     public func removeGlobalKeyHandler(_ char: FlourChar) {
