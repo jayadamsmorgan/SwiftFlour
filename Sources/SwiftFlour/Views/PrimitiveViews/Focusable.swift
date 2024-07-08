@@ -84,7 +84,8 @@ internal class SharedFocusables {
         var array = array
         let x = currentlyFocused.position.x
         let y = currentlyFocused.position.y
-        var f: (Focusable) -> Bool = { item in false }
+        var filter: (Focusable) -> Bool = { item in false }
+        var directionOffset: (Focusable) -> Int32 = { item in 0 }
         var indexOffset = 0
         switch direction {
         case .up:
@@ -92,40 +93,51 @@ internal class SharedFocusables {
                 return nil
             }
             array = Array(array.prefix(upTo: currentlyFocusedIndex - 1))
-            f = { $0.position.y < y }
+            filter = { $0.position.y < y }
+            directionOffset = { abs($0.position.x - x) }
         case .down:
             guard currentlyFocusedIndex != array.indices.last else {
                 return nil
             }
             array = Array(array.suffix(from: currentlyFocusedIndex + 1))
             indexOffset = currentlyFocusedIndex + 1
-            f = { $0.position.y > y }
+            filter = { $0.position.y > y }
+            directionOffset = { abs($0.position.x - x) }
         case .left:
             guard currentlyFocusedIndex != array.indices.first else {
                 return nil
             }
-            f = { $0.position.x < x }
+            filter = { $0.position.x < x }
+            directionOffset = { abs($0.position.y - y) }
         case .right:
             guard currentlyFocusedIndex != array.indices.last else {
                 return nil
             }
-            f = { $0.position.x > x }
+            filter = { $0.position.x > x }
+            directionOffset = { abs($0.position.y - y) }
         }
         guard !array.isEmpty else {
             return nil
         }
-        var closest = array.first!
-        var closestIndex = array.indices.first!
-        for index in array.indices.dropFirst() {
-            guard f(array[index]) else {
+        var closestIndex: Array<Focusable>.Index?
+        var oldOffset: Int32?
+        for index in array.indices {
+            guard filter(array[index]) else {
                 continue
             }
-            let oldOffset = abs(x - closest.position.x) + abs(y - closest.position.y)
-            let newOffset = abs(x - array[index].position.x) + abs(y - array[index].position.y)
-            if newOffset < oldOffset {
-                closest = array[index]
+            let newOffset = directionOffset(array[index])
+            guard oldOffset != nil else {
+                oldOffset = newOffset
+                closestIndex = index
+                continue
+            }
+            if newOffset < oldOffset! {
+                oldOffset = newOffset
                 closestIndex = index
             }
+        }
+        guard var closestIndex else {
+            return nil
         }
         closestIndex += indexOffset
         guard currentlyFocusedIndex != closestIndex else {
