@@ -4,6 +4,7 @@ import curses
 internal protocol Focusable: _PrimitiveView {
     var isFocused: Bool { get set }
     var onPress: () -> Void { get set }
+    var cursorPos: Position { get }
 }
 
 internal enum Direction {
@@ -13,9 +14,29 @@ internal enum Direction {
     case right
 }
 
+public enum FocusableSelectStyle {
+    case bordered
+    case highlighted
+    case cursor
+    case none
+}
+
 internal class SharedFocusables {
 
     public static let shared: SharedFocusables = SharedFocusables()
+
+    private var focusableSelectStyleHolder: FocusableSelectStyle = .cursor
+    public var focusableSelectStyle: FocusableSelectStyle {
+        get { focusableSelectStyleHolder }
+        set {
+            focusableSelectStyleHolder = newValue
+            if newValue == .cursor {
+                curs_set(1)
+            } else {
+                curs_set(0)
+            }
+        }
+    }
 
     private var map: [Scene: [any Focusable]]
     private var currentlyFocused: [Scene: Array<Focusable>.Index]
@@ -23,17 +44,23 @@ internal class SharedFocusables {
     private init() {
         self.map = [:]
         self.currentlyFocused = [:]
+        if focusableSelectStyleHolder == .cursor {
+            curs_set(1)
+        }
+    }
+
+    internal func pressCurrentlyFocused(for scene: Scene) {
+        guard let currentlyFocusedIndex = currentlyFocused[scene] else {
+            return
+        }
+        guard let array = map[scene] else {
+            return
+        }
+        array[currentlyFocusedIndex].onPress()
     }
 
     @MainActor
     internal func addFocusable(_ focusable: any Focusable, for scene: Scene) {
-        defer {
-            var str = ""
-            for item in map[scene] ?? [] {
-                str.append("\(item.text), ")
-            }
-            App.logger.info(str)
-        }
         guard let array = map[scene], !array.isEmpty else {
             map[scene] = [focusable]
             currentlyFocused[scene] = 0
@@ -146,6 +173,20 @@ internal class SharedFocusables {
         return closestIndex
     }
 
+    internal func setCursor(for scene: Scene) {
+        guard self.focusableSelectStyleHolder == .cursor else {
+            return
+        }
+        guard let currentlyFocusedIndex = currentlyFocused[scene] else {
+            return
+        }
+        guard let array = map[scene] else {
+            return
+        }
+        let cursorPos = array[currentlyFocusedIndex].cursorPos
+        mvaddstr(cursorPos.y, cursorPos.x, "")
+    }
+
     @MainActor
     internal func moveFocusable(for scene: Scene, direction: Direction) {
         guard let array = map[scene] else {
@@ -167,13 +208,6 @@ internal class SharedFocusables {
                 direction: direction
             )
         else {
-            // self.currentlyFocused[scene] = array.indices.last!
-            // array.last?.isFocused = true
-            // if direction == .up || direction == .left {
-            //     previousFocusable(for: scene)
-            // } else {
-            //     nextFocusable(for: scene)
-            // }
             return
         }
         currentlyFocused.isFocused = false

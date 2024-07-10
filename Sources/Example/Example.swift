@@ -28,6 +28,8 @@ public struct Example {
                 .setPosition((100, 15)),
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
+            Checkbox(style: .bigSquared)
+                .setPosition((60, 20)),
         ]
     }
 

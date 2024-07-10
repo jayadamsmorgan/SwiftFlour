@@ -14,8 +14,6 @@ public enum ButtonBorderStyle {
 
 public class Button: Text, Focusable {
 
-    private let id = UUID()
-
     private var buttonStyle: ButtonStyle
 
     private var buttonIsPressed: Bool = false
@@ -24,6 +22,8 @@ public class Button: Text, Focusable {
 
     internal var isFocused: Bool = false
     internal var onPress: () -> Void = {}
+
+    internal var cursorPos: Position { self.position }
 
     public init(_ text: String, style: ButtonStyle = .textOnly) {
         self.buttonStyle = style
@@ -50,36 +50,22 @@ public class Button: Text, Focusable {
     }
 
     private func renderFocused() {
-        if let window = self.parentScene?.window {
-            renderBorder(
-                window: window,
-                viewPosition: position,
-                viewWidth: width,
-                viewHeight: height,
-                verticalPadding: 1,
-                horizontalPadding: 1
-            )
+        if SharedFocusables.shared.focusableSelectStyle == .bordered {
+            if let window = self.parentScene?.window {
+                renderBorder(
+                    window: window,
+                    viewPosition: position,
+                    viewWidth: width,
+                    viewHeight: height,
+                    verticalPadding: 1,
+                    horizontalPadding: 1
+                )
+            }
         }
     }
 
     public func setOnClick(_ onClick: @escaping () -> Void) {
         self.onPress = onClick
-    }
-
-}
-
-extension Button: Equatable {
-
-    public static func == (lhs: Button, rhs: Button) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-}
-
-extension Button: Hashable {
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.id)
     }
 
 }
