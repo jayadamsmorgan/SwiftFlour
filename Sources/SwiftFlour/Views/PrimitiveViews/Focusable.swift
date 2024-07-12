@@ -49,14 +49,19 @@ internal class SharedFocusables {
         }
     }
 
-    internal func pressCurrentlyFocused(for scene: Scene) {
+    @MainActor
+    internal func processCurrentFocusable(key: FlourChar, for scene: Scene) {
         guard let currentlyFocusedIndex = currentlyFocused[scene] else {
             return
         }
         guard let array = map[scene] else {
             return
         }
-        array[currentlyFocusedIndex].onPress()
+        if let focused = array[currentlyFocusedIndex] as? Input {
+            focused.handleInput(key)
+        } else if key == .space || key == .enter {
+            array[currentlyFocusedIndex].onPress()
+        }
     }
 
     @MainActor

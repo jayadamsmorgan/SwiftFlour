@@ -28,8 +28,11 @@ public struct Example {
                 .setPosition((100, 15)),
             Text("WOW")
                 .setForeground(.rgb255(0, 180, 255)),
-            Checkbox(style: .bigSquared)
+            Checkbox(style: .smallRounded)
                 .setPosition((60, 20)),
+            Input(placeholder: "placeholder")
+                .setPosition((80, 20))
+                .withBorder(),
         ]
     }
 
@@ -52,7 +55,7 @@ public struct Example {
         .setBackgroundColor(.green)
 
         app.scenes = [scene, scene2]
-        App.quitKey = .q
+        App.quitKey = .escape
 
         app.addGlobalKeyHandler(FlourChar("d")) {
             app.scenes.removeLast()

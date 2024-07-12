@@ -116,14 +116,6 @@ public class App {
             }
             SharedFocusables.shared.previousFocusable(for: selectedScene)
         }
-        let pressFocused: () -> Void = {
-            guard let selectedScene = self.getCurrentScene() else {
-                return
-            }
-            SharedFocusables.shared.pressCurrentlyFocused(for: selectedScene)
-        }
-        self.keyHandlers[FlourChar.space.charAscii] = pressFocused
-        self.keyHandlers[FlourChar.enter.charAscii] = pressFocused
     }
 
     private func render() {
@@ -233,6 +225,10 @@ public class App {
             return
         }
         processGlobalKeyHandlers(lastInput)
+        guard let scene = getCurrentScene() else {
+            return
+        }
+        SharedFocusables.shared.processCurrentFocusable(key: lastInput, for: scene)
     }
 
     private func processGlobalKeyHandlers(_ input: FlourChar) {

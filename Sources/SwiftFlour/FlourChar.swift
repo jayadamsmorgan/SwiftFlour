@@ -13,7 +13,7 @@ public struct FlourChar: Equatable, Sendable, Hashable {
     public static let tab = FlourChar(9)
     public static let shiftTab = FlourChar(353)
     public static let enter = FlourChar(10)
-    public static let backspace = FlourChar(263)
+    public static let backspace = FlourChar(127)
 
     public static let space = FlourChar(32)
 
