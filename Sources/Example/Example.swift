@@ -30,7 +30,7 @@ public struct Example {
                 .setForeground(.rgb255(0, 180, 255)),
             Checkbox(style: .smallRounded)
                 .setPosition((60, 20)),
-            Input(placeholder: "placeholder")
+            Input(placeholder: "placeholderplaceholder")
                 .setPosition((80, 20))
                 .withBorder(),
         ]

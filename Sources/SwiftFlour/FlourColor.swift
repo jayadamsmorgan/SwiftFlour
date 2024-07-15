@@ -160,33 +160,24 @@ extension View {
         return Int32(count)
     }
 
-    internal func startColor(_ pair: (FlourColor?, FlourColor?)) {
-
-        let colorPair = getColorPair(pair)
-
-        attron(COLOR_PAIR(colorPair))
-    }
-
-    internal func startColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer) {
-
-        let colorPair = getColorPair(pair)
-
-        wattron(window, COLOR_PAIR(colorPair))
-    }
-
-    internal func endColor(_ pair: (FlourColor?, FlourColor?)) {
-        let pair = FlourColorPair(foreground: pair.0, background: pair.1)
-        if let colorPair = colorPair[pair] {
-            attroff(COLOR_PAIR(Int32(colorPair)))
+    internal func startColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer? = nil) {
+        if let window {
+            let colorPair = getColorPair(pair)
+            wattron(window, COLOR_PAIR(colorPair))
         } else {
-            App.logger.error("Tried to end color pair which was not created.")
+            let colorPair = getColorPair(pair)
+            attron(COLOR_PAIR(colorPair))
         }
     }
 
-    internal func endColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer) {
+    internal func endColor(_ pair: (FlourColor?, FlourColor?), window: OpaquePointer? = nil) {
         let pair = FlourColorPair(foreground: pair.0, background: pair.1)
         if let colorPair = colorPair[pair] {
-            wattroff(window, COLOR_PAIR(Int32(colorPair)))
+            if let window {
+                wattroff(window, COLOR_PAIR(Int32(colorPair)))
+            } else {
+                attroff(COLOR_PAIR(Int32(colorPair)))
+            }
         } else {
             App.logger.error("Tried to end color pair which was not created.")
         }

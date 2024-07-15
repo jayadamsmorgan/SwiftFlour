@@ -40,4 +40,17 @@ extension View {
         }
     }
 
+    public func printString(_ str: String, position: Position, window: OpaquePointer? = nil) {
+        if let window {
+            mvwaddstr(window, position.y, position.x, str)
+        } else {
+            mvaddstr(position.y, position.x, str)
+        }
+    }
+
+    public func printString(_ str: String, position: (Int32, Int32), window: OpaquePointer? = nil) {
+        let position = Position(position)
+        printString(str, position: position, window: window)
+    }
+
 }

@@ -3,7 +3,7 @@ import curses
 
 public class Input: Text, Focusable {
     public var value: String = ""
-    public var placeholder: String = ""
+    public var placeholder: String
 
     private var isFocusedHolder = false
     private var justFocused: Bool = false
@@ -21,22 +21,42 @@ public class Input: Text, Focusable {
     public var onEnter: (() -> Void)?
     internal var onPress: () -> Void
 
-    // public var placeholderForeground: FlourColor = .custom(.init(UInt8(30), 30, 30))  // gray color
-    public var placeholderForeground: FlourColor = .red
+    public var placeholderForeground: FlourColor = .rgb255(177, 177, 177)
 
     public var focusedBackground: FlourColor = .blue
     public var focusedForeground: FlourColor = .white
 
-    public var cursorPos: Position { Position((self.position.x + Int32(value.count), self.position.y)) }
+    public var cursorPos: Position {
+        Position((self.position.x + Int32(self.text.count), self.position.y))
+    }
 
     public init(placeholder: String = "") {
         onPress = {}
-        super.init(placeholder)
+        self.placeholder = placeholder
+        super.init("")
         self.width = 15
     }
 
     public override func render() {
         self.text = isFocused ? value : (value.count == 0 ? placeholder : value)
+        if value.count == 0 && !isFocused {
+            self.text = String(self.text.prefix(Int(self.width)))
+            let window = self.parentScene?.window
+            if borderEnabled {
+                renderBorder()
+            }
+            var backgroundColor = self.backgroundColor
+            if backgroundColor == .transparent, let parentBackground {
+                backgroundColor = parentBackground
+            }
+            startColor((placeholderForeground, backgroundColor), window: window)
+            printString(self.text, position: self.position, window: window)
+            endColor((placeholderForeground, backgroundColor), window: window)
+            return
+        }
+        if self.text.count > self.width {
+            self.text = String(self.text.suffix(Int(self.width)))
+        }
         super.render()
     }
 
@@ -52,6 +72,8 @@ public class Input: Text, Focusable {
             case .backspace:
                 value = String(value.dropLast())
                 onValueChange?(value)
+            case .arrowUp, .arrowDown, .arrowLeft, .arrowRight:
+                return
             default:
                 value.append(Character(UnicodeScalar(Int(key.charAscii))!))
                 onValueChange?(value)

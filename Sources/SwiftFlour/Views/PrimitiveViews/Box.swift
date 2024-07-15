@@ -26,23 +26,15 @@ public class Box: _PrimitiveView {
 
         let window = parentScene?.window
 
-        if let window {
-            startColor((nil, color), window: window)
-        } else {
-            startColor((nil, color))
-        }
+        startColor((nil, color), window: window)
         for i in position.y..<position.y + height {
-            if window != nil {
-                mvwaddstr(window!, i, position.x, String(repeating: " ", count: Int(width)))
-            } else {
-                mvaddstr(i, position.x, String(repeating: " ", count: Int(width)))
-            }
+            printString(
+                String(repeating: " ", count: Int(width)),
+                position: (position.x, i),
+                window: window
+            )
         }
-        if let window {
-            endColor((nil, color), window: window)
-        } else {
-            endColor((nil, color))
-        }
+        endColor((nil, color), window: window)
         super.render()
     }
 

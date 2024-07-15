@@ -41,36 +41,20 @@ public class Text: _PrimitiveView {
 
         let window = parentScene?.window
 
-        if let window {
-            self.startColor((foregroundColor, backgroundColor), window: window)
-        } else {
-            self.startColor((foregroundColor, backgroundColor))
-        }
+        self.startColor((foregroundColor, backgroundColor), window: window)
 
         var text = self.text
         if width < text.count {
             for i in position.y..<position.y + height {
                 let printText = String(text.prefix(Int(width)))
                 text = String(text.dropFirst(Int(width)))
-                if let window {
-                    mvwaddstr(window, i, position.x, printText)
-                } else {
-                    mvaddstr(i, position.x, printText)
-                }
+                printString(printText, position: (position.x, i), window: window)
             }
         } else {
-            if let window {
-                mvwaddstr(window, position.y, position.x, text)
-            } else {
-                mvaddstr(position.y, position.x, text)
-            }
+            printString(text, position: position, window: window)
         }
 
-        if let window {
-            self.endColor((foregroundColor, backgroundColor), window: window)
-        } else {
-            self.endColor((foregroundColor, backgroundColor))
-        }
+        self.endColor((foregroundColor, backgroundColor), window: window)
         super.render()
 
     }
