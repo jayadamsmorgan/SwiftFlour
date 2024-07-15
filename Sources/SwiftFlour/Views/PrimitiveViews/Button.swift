@@ -4,6 +4,7 @@ import curses
 public enum ButtonStyle {
     case textOnly
     case colored
+    case bordered
     case custom(border: ButtonBorderStyle = .disabled, color: FlourColor? = nil)
 }
 
@@ -30,10 +31,12 @@ public class Button: Text, Focusable {
         super.init(text)
     }
 
-    public init(_ text: String, style: ButtonStyle = .textOnly, _ onClick: @escaping () -> Void) {
+    public init(_ text: String, style: ButtonStyle = .textOnly, _ onClick: @escaping (Button) -> Void) {
         self.buttonStyle = style
-        self.onPress = onClick
         super.init(text)
+        self.onPress = {
+            onClick(self)
+        }
     }
 
     public override func render() {
@@ -64,8 +67,10 @@ public class Button: Text, Focusable {
         }
     }
 
-    public func setOnClick(_ onClick: @escaping () -> Void) {
-        self.onPress = onClick
+    public func setOnClick(_ onClick: @escaping (Button) -> Void) {
+        self.onPress = {
+            onClick(self)
+        }
     }
 
 }

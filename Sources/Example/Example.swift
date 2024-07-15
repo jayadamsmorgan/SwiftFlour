@@ -18,8 +18,13 @@ public struct Example {
                 .setHeight(13)
                 .setPosition((20, 20))
                 .withBorder(verticalPadding: 2, horizontalPadding: 4),
-            Button("BUTTON")
-                .setPosition((80, 10)),
+            Button(
+                "BUTTON",
+                { button in
+                    button.setText(button.getText() == "BUTTON" ? "WOW" : "BUTTON")
+                }
+            )
+            .setPosition((80, 10)),
             Button("BUTTON2")
                 .setPosition((80, 15)),
             Button("BUTTON3")
@@ -32,6 +37,9 @@ public struct Example {
                 .setPosition((60, 20)),
             Input(placeholder: "placeholderplaceholder")
                 .setPosition((80, 20))
+                .withBorder(),
+            SecureInput(placeholder: "password")
+                .setPosition((80, 30))
                 .withBorder(),
         ]
     }

@@ -6,7 +6,7 @@ public class Input: Text, Focusable {
     public var placeholder: String
 
     private var isFocusedHolder = false
-    private var justFocused: Bool = false
+    internal var justFocused: Bool = false
     internal var isFocused: Bool {
         get { isFocusedHolder }
         set {
@@ -18,8 +18,7 @@ public class Input: Text, Focusable {
     }
 
     public var onValueChange: ((String) -> Void)?
-    public var onEnter: (() -> Void)?
-    internal var onPress: () -> Void
+    internal var onPress: () -> Void = {}
 
     public var placeholderForeground: FlourColor = .rgb255(177, 177, 177)
 
@@ -35,6 +34,15 @@ public class Input: Text, Focusable {
         self.placeholder = placeholder
         super.init("")
         self.width = 15
+    }
+
+    public init(placeholder: String = "", _ onClick: @escaping (Input) -> Void) {
+        self.placeholder = placeholder
+        super.init("")
+        self.width = 15
+        onPress = {
+            onClick(self)
+        }
     }
 
     public override func render() {
@@ -68,7 +76,7 @@ public class Input: Text, Focusable {
             }
             switch key {
             case .enter:
-                onEnter?()
+                onPress()
             case .backspace:
                 value = String(value.dropLast())
                 onValueChange?(value)

@@ -59,4 +59,10 @@ public class Text: _PrimitiveView {
 
     }
 
+    public func setText(_ text: String) {
+        self.text = text
+    }
+
+    public func getText() -> String { self.text }
+
 }
