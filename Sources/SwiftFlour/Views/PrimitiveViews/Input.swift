@@ -26,46 +26,43 @@ public class Input: Text, Focusable {
     public var focusedForeground: FlourColor = .white
 
     public var cursorPos: Position {
-        Position((self.position.x + Int32(self.text.count), self.position.y))
+        Position((self.position.x + (Int32(self.text.count)), self.position.y))
     }
 
     public init(placeholder: String = "") {
         onPress = {}
         self.placeholder = placeholder
-        super.init("")
-        self.width = 15
+        super.init(placeholder)
+        self.minWidth = 15
+        self.minHeight = 1
+        self.maxWidth = 20
+        updateLines()
     }
 
     public init(placeholder: String = "", _ onClick: @escaping (Input) -> Void) {
         self.placeholder = placeholder
-        super.init("")
-        self.width = 15
+        super.init(placeholder)
+        self.minWidth = 15
+        self.minHeight = 1
         onPress = {
             onClick(self)
         }
+        updateLines()
     }
 
     public override func render() {
-        self.text = isFocused ? value : (value.count == 0 ? placeholder : value)
-        if value.count == 0 && !isFocused {
-            self.text = String(self.text.prefix(Int(self.width)))
-            let window = self.parentScene?.window
-            if borderEnabled {
-                renderBorder()
-            }
-            var backgroundColor = self.backgroundColor
-            if backgroundColor == .transparent, let parentBackground {
-                backgroundColor = parentBackground
-            }
-            startColor((placeholderForeground, backgroundColor), window: window)
-            printString(self.text, position: self.position, window: window)
-            endColor((placeholderForeground, backgroundColor), window: window)
-            return
+        if isFocused || value.count != 0 {
+            self.text = value
+            updateLines()
+            super.render()
+        } else {
+            self.text = placeholder
+            let lastForeground = self.foregroundColor
+            self.foregroundColor = placeholderForeground
+            updateLines()
+            super.render()
+            self.foregroundColor = lastForeground
         }
-        if self.text.count > self.width {
-            self.text = String(self.text.suffix(Int(self.width)))
-        }
-        super.render()
     }
 
     internal func handleInput(_ key: FlourChar) {

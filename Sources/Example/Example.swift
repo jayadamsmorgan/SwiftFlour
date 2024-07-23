@@ -5,10 +5,14 @@ import SwiftFlour
 public struct Example {
 
     class FirstView: View {
+
+        static var progressView = ProgressView(style: .spinner(size: 1))
+            .setPosition((100, 30))
+
         public var body: [any View] = [
             Text("Hello, World!")
                 .setPosition((10, 10))
-                .setWidth(12)
+                .setMaxWidth(12)
                 .setHeight(1)
                 .setForeground(.magenta)
                 .setBackground(.cyan)
@@ -22,6 +26,7 @@ public struct Example {
                 "BUTTON",
                 { button in
                     button.setText(button.getText() == "BUTTON" ? "WOW" : "BUTTON")
+                    progressView.pause()
                 }
             )
             .setPosition((80, 10)),
@@ -41,11 +46,21 @@ public struct Example {
             SecureInput(placeholder: "password")
                 .setPosition((80, 30))
                 .withBorder(),
+            List(
+                [
+                    Text("WOW"), Text("WOW2"), Text("WOW3"),
+                ],
+                spacing: 3,
+                direction: .horizontal
+            )
+            .setPosition((80, 35)),
+            progressView,
         ]
     }
 
     public static func main() async {
         App.logger.logLevel = .debug
+        App.fps = 120
         let app = App()
 
         let scene = Scene([FirstView()])

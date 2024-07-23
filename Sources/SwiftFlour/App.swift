@@ -157,7 +157,7 @@ public class App {
     #if DEBUG
     private func debugLine() {
         wclear(debugWindow)
-        let bottomLine = String(repeating: "_", count: Int(App.width))
+        let bottomLine = String(repeating: "—", count: Int(App.width))
         mvwaddstr(debugWindow, 0, 0, bottomLine)
         mvwaddstr(
             debugWindow,
