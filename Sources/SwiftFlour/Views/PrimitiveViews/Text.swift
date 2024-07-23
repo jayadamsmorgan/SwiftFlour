@@ -139,8 +139,12 @@ public class Text: _PrimitiveView {
 
         self.startColor((foregroundColor, backgroundColor), window: window)
 
-        for line in printLines {
-            printString(String(line), position: self.position, window: window)
+        for lineIndex in printLines.indices {
+            printString(
+                String(printLines[lineIndex]),
+                position: (self.position.x, self.position.y + Int32(lineIndex)),
+                window: window
+            )
         }
 
         self.endColor((foregroundColor, backgroundColor), window: window)

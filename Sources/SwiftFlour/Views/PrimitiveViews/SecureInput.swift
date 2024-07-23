@@ -3,7 +3,7 @@ import curses
 
 public class SecureInput: Input {
 
-    private var secureValue: String = ""
+    private var secureValue: [Character] = []
 
     override internal func handleInput(_ key: FlourChar) {
         if isFocused {
@@ -15,7 +15,7 @@ public class SecureInput: Input {
             case .enter:
                 onPress()
             case .backspace:
-                secureValue = String(secureValue.dropLast())
+                secureValue = secureValue.dropLast()
                 value = String(value.dropLast())
                 onValueChange?(value)
             case .arrowUp, .arrowDown, .arrowLeft, .arrowRight:
@@ -28,7 +28,7 @@ public class SecureInput: Input {
         }
     }
 
-    public func getSecureValue() -> String {
+    public func getSecureValue() -> [Character] {
         secureValue
     }
 

@@ -6,7 +6,7 @@ public struct Example {
 
     class FirstView: View {
 
-        static var progressView = ProgressView(style: .spinner(size: 1))
+        static var progressView = ProgressView(style: .spinner(size: 3))
             .setPosition((100, 30))
 
         public var body: [any View] = [
@@ -26,7 +26,7 @@ public struct Example {
                 "BUTTON",
                 { button in
                     button.setText(button.getText() == "BUTTON" ? "WOW" : "BUTTON")
-                    progressView.pause()
+                    progressView.toggleStartStop()
                 }
             )
             .setPosition((80, 10)),

@@ -19,26 +19,27 @@ public class ProgressView: Text {
     private var enabled: Bool = true
     private var paused: Bool = false
 
-    public init(style: ProgressViewStyle = .spinner(size: 1)) {
+    public init(style: ProgressViewStyle = .spinner(size: 1), enabled: Bool = true, paused: Bool = false) {
+        self.paused = paused
+        self.enabled = enabled
         switch style {
         case .spinner(let size):
-            super.init(String(repeating: " ", count: size * size))
+            super.init("")
             initSpinner(size: size)
         }
     }
 
     private func initSpinner(size: Int) {
-        guard size >= 1 else {
-            fatalError("ProgressView spinner size needs to be greater than 0.")
+        var size = size
+        if size <= 0 {
+            size = 1
         }
 
-        self.width = Int32(size)
-        self.height = Int32(size)
+        self.minWidth = Int32(size)
+        self.minHeight = Int32(size)
 
         guard size > 1 else {
             progressState = ["\\", "|", "/", "—"]
-            self.width = 1
-            self.height = 1
             return
         }
 
@@ -83,40 +84,25 @@ public class ProgressView: Text {
                 progressState[3].append("\n")
             }
         }
+        self.frameCount = Double(App.fps) * animationSpeed
     }
 
     override public func render() {
-        frameCount += 1
-        if frameCount >= Double(App.fps) * animationSpeed {
-            frameCount = 0
-            if progressStateIndex == progressState.count - 1 {
-                progressStateIndex = 0
-            } else {
-                progressStateIndex += 1
+        if !enabled {
+            return
+        }
+        if !paused {
+            frameCount += 1
+            if frameCount >= Double(App.fps) * animationSpeed {
+                frameCount = 0
+                progressStateIndex =
+                    (progressStateIndex == progressState.count - 1) ? 0 : progressStateIndex + 1
+                self.text = progressState[progressStateIndex]
+                updateLines()
             }
         }
 
-        self.text = progressState[progressStateIndex]
-
-        if borderEnabled {
-            renderBorder()
-        }
-
-        var backgroundColor = self.backgroundColor
-        if backgroundColor == .transparent, let parentBackground {
-            backgroundColor = parentBackground
-        }
-
-        let window = parentScene?.window
-
-        self.startColor((foregroundColor, backgroundColor), window: window)
-
-        let lines = self.text.split(separator: "\n")
-        for i in 0..<self.height {
-            printString(String(lines[Int(i)]), position: (self.position.x, self.position.y + i), window: window)
-        }
-
-        self.endColor((foregroundColor, backgroundColor), window: window)
+        super.render()
     }
 
     public func setProgressPercentage(_ percentage: Int) {
@@ -124,15 +110,28 @@ public class ProgressView: Text {
     }
 
     public func stop() {
-
+        enabled = true
     }
 
     public func pause() {
-
+        if enabled {
+            paused = true
+        }
     }
 
     public func start() {
+        enabled = true
+        paused = false
+    }
 
+    public func toggleStartPause() {
+        if enabled {
+            paused.toggle()
+        }
+    }
+
+    public func toggleStartStop() {
+        enabled.toggle()
     }
 
 }
