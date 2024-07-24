@@ -247,6 +247,18 @@ public class App {
         return scenes[selectedScene]
     }
 
+    public func nextScene() {
+        if selectedScene < scenes.count - 1 {
+            selectedScene += 1
+        }
+    }
+
+    public func previousScene() {
+        if selectedScene > 0 {
+            selectedScene -= 1
+        }
+    }
+
     private func handleResize() {
         App.width = COLS
         #if DEBUG

@@ -1,16 +1,10 @@
 import Foundation
 import curses
 
-public enum ProgressViewStyle {
-    case spinner(size: Int)
-}
-
 public class ProgressView: Text {
 
     private var progressState: [String] = []
     private var progressStateIndex: Int = 0
-
-    private var progressPercentage: Int = 0
 
     private var animationSpeed: Double = 0.4
 
@@ -19,14 +13,15 @@ public class ProgressView: Text {
     private var enabled: Bool = true
     private var paused: Bool = false
 
-    public init(style: ProgressViewStyle = .spinner(size: 1), enabled: Bool = true, paused: Bool = false) {
+    public init(
+        size: Int = 1,
+        enabled: Bool = true,
+        paused: Bool = false
+    ) {
         self.paused = paused
         self.enabled = enabled
-        switch style {
-        case .spinner(let size):
-            super.init("")
-            initSpinner(size: size)
-        }
+        super.init("")
+        initSpinner(size: size)
     }
 
     private func initSpinner(size: Int) {
@@ -105,10 +100,6 @@ public class ProgressView: Text {
         super.render()
     }
 
-    public func setProgressPercentage(_ percentage: Int) {
-        self.progressPercentage = percentage
-    }
-
     public func stop() {
         enabled = true
     }
@@ -132,6 +123,14 @@ public class ProgressView: Text {
 
     public func toggleStartStop() {
         enabled.toggle()
+    }
+
+    public func isEnabled() -> Bool {
+        enabled
+    }
+
+    public func isPaused() -> Bool {
+        paused
     }
 
 }

@@ -6,7 +6,7 @@ public struct Example {
 
     class FirstView: View {
 
-        static var progressView = ProgressView(style: .spinner(size: 3))
+        static var progressView = ProgressView(size: 3)
             .setPosition((100, 30))
 
         public var body: [any View] = [
@@ -53,7 +53,7 @@ public struct Example {
                 spacing: 3,
                 direction: .horizontal
             )
-            .setPosition((80, 35)),
+            .setPosition((120, 20)),
             progressView,
         ]
     }
@@ -86,16 +86,8 @@ public struct Example {
         app.addGlobalKeyHandler(FlourChar("a")) {
             app.scenes.append(scene2)
         }
-        app.addGlobalKeyHandler(FlourChar("]")) {
-            if app.selectedScene < app.scenes.count - 1 {
-                app.selectedScene += 1
-            }
-        }
-        app.addGlobalKeyHandler(FlourChar("[")) {
-            if app.selectedScene > 0 {
-                app.selectedScene -= 1
-            }
-        }
+        app.addGlobalKeyHandler(FlourChar("]"), handler: app.nextScene)
+        app.addGlobalKeyHandler(FlourChar("["), handler: app.previousScene)
         app.addGlobalKeyHandler(FlourChar("i")) {
             app.scenes[0].add(Text("TEST"))
         }
